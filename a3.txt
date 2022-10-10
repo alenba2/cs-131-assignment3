@@ -1,0 +1,139 @@
+Script started on 2022-10-08 19:14:28-04:00
+kallen@sjsu:~\[allen@sjsu ~]$ awk -F"\t" '($2 != $6 && $6 != Null) {print $2, $6}' Orig_Tweets2.tsv > a3/Orig_Tweet_ReplyNoBots.tsv
+kallen@sjsu:~\[allen@sjsu ~]$ cd a3
+kallen@sjsu:~/a3\[allen@sjsu a3]$ awk -F"\t" '{print $0}' Orig_Tweets_ReplyNoBots.tsv | sort > Orig_Tweets_Sorted.tsv
+{
+Note:  Q1
+
+Sorted and put to Orig_Tweets_Sorted.tsv
+}
+kallen@sjsu:~/a3\[allen@sjsu a3]$ awk -F" " '{print $2,$1}' Orig_Tweets_Sorted.tsv | sort | uniq -c | sort -nr -k 1 > KCounted_Tweets.tsv
+kallen@sjsu:~/a3\[allen@sjsu a3]$ awk -F" " '( $1 >= 3 ){print $0}' Counted_Tweets.tsv > Limit_Count.tsv
+{
+Note: Q2
+
+Sort based on Reply
+Then delete any user reply less than 3
+}
+kallen@sjsu:~/a3\[allen@sjsu a3]$ awk -F" " '( $1 == 3 ){print $0}' Limit_Count.tsv | wc -l > HistogramSetup.txt
+kallen@sjsu:~/a3\[allen@sjsu a3]$ awk -F" " '( $1 == 4 ){print $0}' Limit_Count.tsv | wc -l >> HistogramSetup.txt
+kallen@sjsu:~/a3\[allen@sjsu a3]$ awk -F" " '( $1 == 5 ){print $0}' Limit_Count.tsv | wc -l >> HistogramSetup.txt
+kallen@sjsu:~/a3\[allen@sjsu a3]$ awk -F" " '( $1 > 5 ){print $0}' Limit_Count.tsv | wc -l >> HistogramSetup.txt
+kallen@sjsu:~/a3\[allen@sjsu a3]$ nano HistogramSetup.txt
+{
+Note: Q3
+
+Create a file for gnuplot
+
+bin:  3,4,5,6+
+}
+\[allen@sjsu a3]$ cd ..
+kallen@sjsu:~\[allen@sjsu ~]$ cd src
+kallen@sjsu:~\[allen@sjsu ~]$ /etc/gnuplot-5.4.4/src/gnuplot
+
+	G N U P L O T
+	Version 5.4 patchlevel 4    last modified 2022-07-10 
+
+	Copyright (C) 1986-1993, 1998, 2004, 2007-2022
+	Thomas Williams, Colin Kelley and many others
+
+	gnuplot home:     http://www.gnuplot.info
+	faq, bugs, etc:   type "help FAQ"
+	immediate help:   type "help"  (plot window: hit 'h')
+
+Terminal type is now 'unknown'
+gnuplot> set terminal svg
+
+Terminal type is now 'svg'
+Options are 'size 600,480 fixed enhanced font 'Arial,12' butt dashlength 1.0 '
+gnuplot> set output 'HistogramOutput.svg'
+gnuplot> set style data histograms
+gnuplot> plot 'HistogramSetup.txt' using 2:xtic(1)
+gnuplot> exit
+
+{
+Note: gnuplot
+
+outputed file HistogramSetup.svg
+}
+
+kallen@sjsu:~\[allen@sjsu ~]$ awk -F"\t"  '( $6 != Null) {print $6,$4}' Orig_Tweets2NoBot.tsv | sort | uniq -c | sort -nr -k 1 | head -30 > Top30.txt
+kallen@sjsu:~\[allen@sjsu ~]$ awk -F"\t" '($4 != Null){print toupper($4)}' Tweets_NotBot.tsv | sort |  uniq -c | sort -nr -k 1 | head -30 > Compare2.txt
+kallen@sjsu:~\[allen@sjsu ~]$ nano Compare2.txt
+kallen@sjsu:~\[allen@sjsu ~]$ awk -F" "  '{print toupper($3)}' Top30.txt > A3Upper.txt
+kallen@sjsu:~\[allen@sjsu ~]$ awk -F" "  '{print $2}' Compare2.txt > A2Upper.txt
+kallen@sjsu:~\[allen@sjsu ~]$ diff A3Upper.txt A2Upper.txt
+1,8c1,2
+< AUSPOL
+< "PAMANDTOMMY,UNSUBSCRIBE"
+< AUSPOL
+< "UBI,AUSPOL"
+< AUSPOL
+< "THEBOOKOFBOBAFETT,STOP"
+< PERJURYTAYLORGREENE
+< BBCGMS
+---
+> UKRAINE
+> COVID19
+10,16c4,8
+< 500KWITHNATOUCH
+< STANDWITHUKRAINE
+< BETOFORTEXAS
+< AUSPOL
+< IHAVEAPREEXISTINGCONDITION
+< VITT
+< VOTEFORDOUT2022
+---
+> "FBPE,FOLLOWBACKFRIDAY"
+> BREAKING
+> RUSSIA
+> PMQS
+> COVID
+18,20c10,28
+< ALBOFORPM
+< IMSTILLWITHHER
+< ABLEG
+---
+> OMICRON
+> STANDWITHUKRAINE
+> AMIESMOVIERATING
+> MARIUPOL
+> PARTYGATE
+> BA2
+> KYIV
+> COVIDISAIRBORNE
+> "RUSSIA,UKRAINE"
+> BALES2022FILMCHALLENGE
+> PUTIN
+> RUSSIAN
+> CLIMATECRISIS
+> "PUTINHITLER,STANDWITHUKRAINE,PUTINHITLER,PUTINWARCRIMINAL,STOPPUTINNOW,RUSSIASANCTIONS,BOYCOTTRUSSIA"
+> BOYCOTTATP
+> INSIDERS
+> MITCHPLEASE
+> "CATHRYNHARTT,HARTTANDSOUL,ACTOR,ACTORSLIFE"
+> BREXIT
+22,30c30
+< 
+< STANDWITHUKRAINE️
+< LAUTERBACHBLEIBT
+< LONGCOVID
+< "AUTHORSOFTWITTER,AMAZON,KINDLEUNLIMITED,WRITERSLIFT,POETRY,POEMS"
+< โอห์มฟลุ้คฟีเวอร์2021
+< "DIEMASKEBLEIBTAUF,WIRWOLLENMASKENPFLICHT"
+< LONGCOVID
+< LONGCOVID
+---
+> TIKTOK
+kallen@sjsu:~\[allen@sjsu ~]$ exit
+
+{
+
+Note: Q4
+
+By using diff, we can see the which hashtag didn't exist in A2's hashtag with the sign <
+
+}
+
+
+Script done on 2022-10-09 20:35:46-04:00
